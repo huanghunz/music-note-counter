@@ -1,6 +1,1 @@
 flask>=2.3.0
-Pillow>=10.0.0
-numpy
-pytesseract==0.3.8
-music21>=7.0.0
-opencv-python-headless>=4.0.0
