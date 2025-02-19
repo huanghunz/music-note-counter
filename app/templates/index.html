@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>音符频率分析器</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>五线谱音符频率分析器</h1>
+
+        <div class="upload-section">
+            <form id="uploadForm">
+                <input type="file" id="fileInput" accept=".pdf,.png,.jpg,.jpeg" required>
+                <button type="submit">分析</button>
+            </form>
+        </div>
+
+        <div class="result-section">
+            <canvas id="noteChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData();
+            const fileInput = document.getElementById('fileInput');
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                // 创建图表
+                const ctx = document.getElementById('noteChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(data),
+                        datasets: [{
+                            label: '音符频率',
+                            data: Object.values(data),
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                alert('分析过程中出现错误');
+            }
+        });
+    </script>
+</body>
+</html>
